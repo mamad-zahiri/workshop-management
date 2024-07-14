@@ -1,0 +1,93 @@
+Table Material {
+  id uuid [pk]
+  english_name varchar [null]
+  persian_name varchar
+  unit_price int
+
+  note: 'The raw materials which a worker works with'
+}
+
+Table Product {
+  id uuid [pk]
+  english_name varchar [null]
+  persian_name varchar
+  unit_price positive_int
+}
+
+Table Activity {
+  id uuid [pk]
+  english_name varchar [null]
+  persian_name varchar
+  unit_price positive_int
+  product_id uuid [ref: > Product.id, null]
+}
+
+Enum UserActivityState {
+  assigned
+  doing
+  done
+}
+
+Table UserActivity {
+  id uuid
+  activity_number decimal
+  state UserActivityState [default: 'assigned']
+  is_finished boolean [default: false]
+  assigned_at varchar
+  finished_at varchar
+  activity_id uuid [ref: > Activity.id]
+  user_id uuid [ref: > User.id]
+  review text [note: 'Quality-Control Manager review']
+  comment text [note: 'Some comment or extra description on the activity']
+}
+
+Table WasteMaterial {
+  material_id uuid [ref: > Material.id]
+  user_activity_id uuid [ref: > UserActivity.id]
+  number decimal
+}
+
+Table Package {
+  id uuid [pk]
+  product_id uuid [ref: > Product.id]
+  production_code varchar
+}
+
+Table User{
+  id uuid [pk]
+  first_name varchar
+  last_name varchar
+  username varchar
+  password varchar
+  phone phone
+  phone_verified boolean
+  birth_date timestamp
+}
+
+Enum CustomerType {
+  Company
+  Party
+  Workshop
+}
+
+Table Customer {
+  id uuid [pk]
+  first_name varchar
+  last_name varchar
+  phone varchar
+  type CustomerType
+  address varchar
+}
+
+Table Invoice {
+  id uuid [pk]
+  customer_id uuid [ref: > Customer.id]
+  created_at timestamp
+  sold_at timestamp
+}
+
+Table InvoicePackage {
+  id uuid [pk]
+  package_id uuid [ref: > Package.id]
+  invoice_id uuid [ref: > Invoice.id]
+}
